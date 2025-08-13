@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || "Pandora's Box" %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Flash messages -->
+  <% if (success && success.length > 0) { %>
+    <div class="flash success"><%= success %></div>
+  <% } %>
+
+  <% if (error && error.length > 0) { %>
+    <div class="flash error"><%= error %></div>
+  <% } %>
+
+  <!-- Page content injected here -->
+  <%- body %>
+</body>
+</html>

@@ -18,12 +18,12 @@ exports.postRegister = async (req,res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         await prisma.user.create({data: {name: name, password: hashedPassword, email: email}})
 
-        res.flash("Success", "Account created please log in")
+        req.flash("Success", "Account created please log in")
         res.redirect("/login")
 
     }catch(err){
        console.error(err)
-       res.flash("Error", "Something went wrong. Please retry");
+       req.flash("Error", "Something went wrong. Please retry");
        res.redirect("/register")
     }
 }
