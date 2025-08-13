@@ -34,22 +34,20 @@ app.use(session({
   )
 }));
 
-// Initialize Passport and use session middleware
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Serve static files from public folder
 app.use(express.static(path.join(__dirname, "public")));
 
-// Passport configuration
 require("./config/passport")(passport);
 
-// Basic route
+
 app.get("/", (req, res) => {
   res.send("Pandora's Box");
 });
 
-// Start server
+
 app.listen(PORT, () => {
   console.log(`Server now running on localhost:${PORT}`);
 });
