@@ -64,12 +64,14 @@ app.use(passport.session());
 // Global locals for views
 
 app.use((req, res, next) => {
-  res.locals.user = req.user || null;  // logged-in user
-  code .
-  c  // all flash messages
-  if (!res.locals.title) res.locals.title = "Pandora's Box";
+  res.locals.user = req.user || null;     // logged-in user
+  res.locals.messages = req.flash();      // all flash messages
+  if (!res.locals.title) {
+    res.locals.title = "Pandora's Box";   // default title
+  }
   next();
 });
+
 
 
 // Routes

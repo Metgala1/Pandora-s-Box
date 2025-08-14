@@ -1,44 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-  <link rel="stylesheet" href="/styles.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title><%= title %> · Pandora's Box</title>
+  <link rel="stylesheet" href="/styles.css"/>
 </head>
 <body>
-  <nav>
-    <% if (user) { %>
-      <a href="/upload">Upload</a> |
-      <a href="/files">My Files</a> |
-      <a href="/logout">Logout</a>
-    <% } else { %>
-      <a href="/login">Login</a> |
-      <a href="/register">Register</a>
-    <% } %>
-  </nav>
+  <header class="nav">
+    <div class="nav-inner container">
+      <a class="brand" href="/">
+        <span class="brand-badge"></span>
+        Pandora’s Box
+      </a>
+      <nav class="row">
+        <% if (user) { %>
+          <a href="/upload">Upload</a>
+          <a href="/files">My Files</a>
+          <a href="/folders">Folders</a>
+          <form action="/logout" method="POST" class="row" style="margin:0">
+            <button class="btn btn-ghost" type="submit">Logout</button>
+          </form>
+        <% } else { %>
+          <a href="/login">Login</a>
+          <a href="/register">Register</a>
+        <% } %>
+      </nav>
+    </div>
+  </header>
 
-  <!-- Flash messages -->
-   <% if (messages.error) { %> 
-  <div id="error-message" style="color: red;">
-    <%= messages.error %>
-  </div>
+  <main class="container">
+    <% if (messages && messages.success && messages.success.length) { %>
+      <% messages.success.forEach(m => { %>
+        <div class="alert alert-success"><span>✓</span><span><%= m %></span></div>
+      <% }) %>
+    <% } %>
+    <% if (messages && messages.error && messages.error.length) { %>
+      <% messages.error.forEach(m => { %>
+        <div class="alert alert-error"><span>!</span><span><%= m %></span></div>
+      <% }) %>
+    <% } %>
+
+    <div class="grid">
+      <section class="card">
+        <%- body %>
+      </section>
+      <aside class="card">
+        <h2>Quick Actions</h2>
+        <div class="row">
+          <a class="btn btn-primary" href="/upload">New Upload</a>
+          <a class="btn" href="/files">View Files</a>
+          <a class="btn" href="/folders">Folders</a>
+        </div>
+        <div class="spacer"></div>
+        <p class="mute">Manage and organize your files. Create folders, upload, download, and delete securely.</p>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    © <%= new Date().getFullYear() %> Pandora’s Box — secure, simple storage.
+  </footer>
 
   <script>
     setTimeout(() => {
-      const errorEl = document.getElementById('error-message');
-      if (errorEl) {
-        errorEl.style.display = 'none';
-      }
-    }, 10000); // 10 seconds
+      document.querySelectorAll('.alert').forEach(el => el.style.display='none');
+    }, 4000);
   </script>
-<% } %>
-
-  <% if (messages.success) { %>
-    <div style="color: green;"><%= messages.success %></div>
-  <% } %>
-
-  <!-- View content will render here -->
-  <%- body %>
 </body>
 </html>

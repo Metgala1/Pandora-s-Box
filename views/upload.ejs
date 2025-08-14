@@ -1,8 +1,26 @@
 <h1>Upload a File</h1>
+<p class="mute">Choose a file to upload. Max size depends on your server settings.</p>
 
-<form action="/upload" method="POST" enctype="multipart/form-data">
-  <input type="file" name="file" required />
-  <button type="submit">Upload</button>
+<form action="/upload" method="POST" enctype="multipart/form-data" class="card" style="padding:18px">
+  <div class="field">
+    <label class="mute">File</label>
+    <input class="input" type="file" name="file" required />
+  </div>
+
+  <% if (folders) { %>
+    <div class="field">
+      <label class="mute">Folder (optional)</label>
+      <select name="folderId" class="select">
+        <option value="">— No folder —</option>
+        <% folders.forEach(f => { %>
+          <option value="<%= f.id %>"><%= f.name %></option>
+        <% }) %>
+      </select>
+    </div>
+  <% } %>
+
+  <div class="row">
+    <button class="btn btn-primary" type="submit">Upload</button>
+    <a class="btn" href="/files">My Files</a>
+  </div>
 </form>
-
-<a href="/files">View My Files</a>
