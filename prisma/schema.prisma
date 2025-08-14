@@ -50,6 +50,7 @@ model Folder {
 model File {
   id          Int       @id @default(autoincrement())
   filename    String
+  savedFilename  String?
   url         String    // for cloud storage URL or local path
   size        Int       // size in bytes
   mimetype    String

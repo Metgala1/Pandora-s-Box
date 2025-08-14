@@ -1,22 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title || "Pandora's Box" %></title>
-  <link rel="stylesheet" href="/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
+  <nav>
+    <% if (user) { %>
+      <a href="/upload">Upload</a> |
+      <a href="/files">My Files</a> |
+      <a href="/logout">Logout</a>
+    <% } else { %>
+      <a href="/login">Login</a> |
+      <a href="/register">Register</a>
+    <% } %>
+  </nav>
+
   <!-- Flash messages -->
-  <% if (success && success.length > 0) { %>
-    <div class="flash success"><%= success %></div>
+   <% if (messages.error) { %> 
+  <div id="error-message" style="color: red;">
+    <%= messages.error %>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      const errorEl = document.getElementById('error-message');
+      if (errorEl) {
+        errorEl.style.display = 'none';
+      }
+    }, 10000); // 10 seconds
+  </script>
+<% } %>
+
+  <% if (messages.success) { %>
+    <div style="color: green;"><%= messages.success %></div>
   <% } %>
 
-  <% if (error && error.length > 0) { %>
-    <div class="flash error"><%= error %></div>
-  <% } %>
-
-  <!-- Page content injected here -->
+  <!-- View content will render here -->
   <%- body %>
 </body>
 </html>

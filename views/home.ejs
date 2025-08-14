@@ -6,7 +6,7 @@
   <p>Don't have an account yet? <a href="/register">Sign Up</a></p>
   <p>Already have an account? <a href="/login">Login</a></p>
 <% } else { %>
-  <p>Hello, <%= user.name %>! <a href="/dashboard">Go to your dashboard</a></p>
+  <p>Hello, <%= user.name %>! <a href="/files">Go to your files</a></p>
   <form action="/logout" method="POST">
     <button type="submit">Logout</button>
   </form>

@@ -8,35 +8,36 @@ const expressLayouts = require("express-ejs-layouts");
 
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const { PrismaClient } = require('@prisma/client');
-const authRouter = require("./routes/auth");
+const indexRouter = require("./routes/indexRoute");
+const folderRouter = require("./routes/folderRoutes")
 
 dotenv.config();
 const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ---------------------------
 // EJS and Layouts
-// ---------------------------
+
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(expressLayouts);
 app.set("layout", "layout"); // default layout: views/layout.ejs
 
-// ---------------------------
-// Static files
-// ---------------------------
-app.use(express.static(path.join(__dirname, "public")));
 
-// ---------------------------
+// Static files
+
+app.use(express.static(path.join(__dirname, "public")));
+app.use('/uploads', express.static(path.join(__dirname, "uploads"))); // serve uploaded files
+
+
 // Body parsers
-// ---------------------------
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// ---------------------------
+
 // Session + Prisma store
-// ---------------------------
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'supersecretkey',
   resave: false,
@@ -47,47 +48,36 @@ app.use(session({
   }),
 }));
 
-// ---------------------------
+
 // Flash messages
-// ---------------------------
+
 app.use(flash());
-app.use((req, res, next) => {
-  res.locals.success = req.flash('success');
-  res.locals.error = req.flash('error');
-  next();
-});
 
-// ---------------------------
-// Default title
-// ---------------------------
-app.use((req, res, next) => {
-  if (!res.locals.title) res.locals.title = "Pandora's Box";
-  next();
-});
 
-// ---------------------------
 // Passport
-// ---------------------------
+
 require("./config/passport")(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+// Global locals for views
+
 app.use((req, res, next) => {
-  res.locals.user = req.user || null;
+  res.locals.user = req.user || null;  // logged-in user
+  code .
+  c  // all flash messages
+  if (!res.locals.title) res.locals.title = "Pandora's Box";
   next();
 });
 
-// ---------------------------
+
 // Routes
-// ---------------------------
-app.use('/', authRouter);
 
-// Root route
-app.get("/", (req, res) => {
-  res.render("home", { title: "Home" }); // use res.render to inject body
-});
+app.use("/", indexRouter);
+app.use('/', folderRouter);
 
-// ---------------------------
+
 // Start server
-// ---------------------------
+
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

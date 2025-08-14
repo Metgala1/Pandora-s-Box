@@ -33,7 +33,7 @@ exports.getLogin = (req,res) => {
 };
 
 exports.postLogin = passport.authenticate("local", {
-    successRedirect: "/dahsboard",
+    successRedirect: "/",
     failureRedirect: "/login",
     failureFlash: true
 })
