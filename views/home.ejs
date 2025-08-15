@@ -1,5 +1,4 @@
 <h1>Welcome to Pandora's Box</h1>
-
 <p>Manage your files safely and easily!</p>
 
 <% if (!user) { %>
@@ -7,7 +6,8 @@
   <p>Already have an account? <a href="/login">Login</a></p>
 <% } else { %>
   <p>Hello, <%= user.name %>! <a href="/files">Go to your files</a></p>
-  <form action="/logout" method="POST">
-    <button type="submit">Logout</button>
-  </form>
+  <div class="row" style="margin-top:12px;">
+    <a class="btn btn-primary" href="/upload">Upload New File</a>
+    <a class="btn" href="/files">View My Files</a>
+  </div>
 <% } %>

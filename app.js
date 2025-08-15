@@ -9,7 +9,6 @@ const expressLayouts = require("express-ejs-layouts");
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const { PrismaClient } = require('@prisma/client');
 const indexRouter = require("./routes/indexRoute");
-const folderRouter = require("./routes/folderRoutes")
 
 dotenv.config();
 const prisma = new PrismaClient();
@@ -77,7 +76,6 @@ app.use((req, res, next) => {
 // Routes
 
 app.use("/", indexRouter);
-app.use('/', folderRouter);
 
 
 // Start server

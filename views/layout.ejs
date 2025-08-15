@@ -17,7 +17,6 @@
         <% if (user) { %>
           <a href="/upload">Upload</a>
           <a href="/files">My Files</a>
-          <a href="/folders">Folders</a>
           <form action="/logout" method="POST" class="row" style="margin:0">
             <button class="btn btn-ghost" type="submit">Logout</button>
           </form>
@@ -45,16 +44,6 @@
       <section class="card">
         <%- body %>
       </section>
-      <aside class="card">
-        <h2>Quick Actions</h2>
-        <div class="row">
-          <a class="btn btn-primary" href="/upload">New Upload</a>
-          <a class="btn" href="/files">View Files</a>
-          <a class="btn" href="/folders">Folders</a>
-        </div>
-        <div class="spacer"></div>
-        <p class="mute">Manage and organize your files. Create folders, upload, download, and delete securely.</p>
-      </aside>
     </div>
   </main>
 

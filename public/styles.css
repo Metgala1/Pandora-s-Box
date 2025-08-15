@@ -1,5 +1,4 @@
-/* ====== Pandora's Box — Breathtaking Minimal UI ====== */
-:root{
+:root {
   --bg: #0b0d10;
   --panel: #11141a;
   --panel-2: #141824;
@@ -16,7 +15,7 @@
 }
 
 @media (prefers-color-scheme: light) {
-  :root{
+  :root {
     --bg:#fbfbfd;
     --panel:#ffffff;
     --panel-2:#f5f7fb;
@@ -26,130 +25,157 @@
   }
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
+* { box-sizing:border-box; }
+html, body { height:100%; margin:0; padding:0; }
+body {
   background: radial-gradient(1200px 700px at 10% -10%, rgba(110,231,242,.15), transparent 60%),
               radial-gradient(1200px 700px at 110% -20%, rgba(167,139,250,.15), transparent 60%),
               var(--bg);
-  color:var(--text);
+  color: var(--text);
   font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  transition: background .3s ease, color .3s ease;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ====== Layout ====== */
-.container{
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 24px;
-}
-.nav{
+.container { width: 100%; margin: 0 auto; }
+.nav {
   position: sticky; top:0; z-index:50;
   backdrop-filter: blur(8px);
   background: color-mix(in oklab, var(--panel), transparent 25%);
   border-bottom:1px solid color-mix(in oklab, var(--text), transparent 92%);
 }
-.nav-inner{
+.nav-inner {
   display:flex; align-items:center; justify-content:space-between;
-  gap:16px; padding:14px 24px;
+  gap:16px; padding:14px 24px; flex-wrap:wrap;
 }
-.brand{
+.brand {
   display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text);
-  font-weight:700; letter-spacing:.3px;
+  font-weight:700; letter-spacing:.3px; font-size:1.2rem;
 }
-.brand-badge{
+.brand-badge {
   width:34px; height:34px; border-radius:10px;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
   box-shadow: 0 6px 18px rgba(110,231,242,.35), inset 0 0 12px rgba(255,255,255,.22);
 }
-.nav a{ color:var(--muted); text-decoration:none; padding:8px 10px; border-radius:10px}
-.nav a:hover{ color:var(--text); background: color-mix(in oklab, var(--panel-2), transparent 20%)}
+.nav a {
+  color:var(--muted); text-decoration:none; padding:8px 10px; border-radius:10px;
+  transition: background .2s ease, color .2s ease;
+}
+.nav a:hover { color:var(--text); background: color-mix(in oklab, var(--panel-2), transparent 20%); }
 
-/* ====== Cards / Panels ====== */
-.card{
+.card {
   background: linear-gradient(180deg, color-mix(in oklab, var(--panel), transparent 0%), color-mix(in oklab, var(--panel-2), transparent 0%));
   border:1px solid color-mix(in oklab, var(--text), transparent 90%);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 22px;
+  transition: transform .2s ease, box-shadow .2s ease;
 }
-.grid{
-  display:grid; gap:20px;
-  grid-template-columns: 1fr;
-}
-@media (min-width: 900px){
-  .grid{ grid-template-columns: 1.2fr .8fr;}
-}
+.card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,.38); }
+.grid { display:block; }
 
-/* ====== Headings ====== */
-h1{ font-size: clamp(26px, 2.4vw, 34px); margin: 18px 0 8px}
-h2{ font-size: clamp(18px, 1.6vw, 22px); margin: 0 0 12px; color:var(--muted)}
+h1 { font-size: clamp(26px, 2.4vw, 36px); margin: 18px 0 12px; }
+h2 { font-size: clamp(18px, 1.6vw, 22px); margin: 0 0 14px; color:var(--muted); }
 
-/* ====== Buttons ====== */
-.btn{
+.btn {
   appearance:none; border:0; padding:10px 14px; border-radius:12px;
   background: color-mix(in oklab, var(--panel-2), transparent 0%);
   color:var(--text); cursor:pointer; font-weight:600;
   border:1px solid color-mix(in oklab, var(--text), transparent 88%);
-  transition: transform .05s ease, box-shadow .2s ease, background .2s ease;
+  transition: transform .05s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
 }
-.btn:hover{ transform: translateY(-1px); box-shadow: 0 10px 20px rgba(0,0,0,.25)}
-.btn:focus{ outline:2px solid var(--ring); outline-offset:2px}
-.btn-primary{
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  border-color: transparent;
-}
-.btn-danger{
-  background: linear-gradient(135deg, #f87171, #ef4444);
-  border-color: transparent;
-}
-.btn-ghost{
-  background: transparent;
-  border-color: color-mix(in oklab, var(--text), transparent 88%);
-}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 10px 20px rgba(0,0,0,.25); }
+.btn:focus { outline:2px solid var(--ring); outline-offset:2px; }
+.btn-primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); border-color: transparent; }
+.btn-danger { background: linear-gradient(135deg, #f87171, #ef4444); border-color: transparent; }
+.btn-ghost { background: transparent; border-color: color-mix(in oklab, var(--text), transparent 88%); }
 
-/* ====== Forms ====== */
-.input, .select{
+.input, .select, textarea {
   width:100%; padding:12px 14px; border-radius:12px;
   background: color-mix(in oklab, var(--panel-2), transparent 0%);
   border:1px solid color-mix(in oklab, var(--text), transparent 88%);
-  color:var(--text);
+  color:var(--text); font-size:1rem;
 }
-.input:focus, .select:focus{ outline:2px solid var(--ring); border-color: transparent}
-.field{ display:grid; gap:8px; margin:12px 0}
+.input:focus, .select:focus, textarea:focus { outline:2px solid var(--ring); border-color: transparent; }
+.field { display:grid; gap:8px; margin:12px 0; }
+textarea { resize: vertical; min-height: 100px; }
 
-/* ====== Tables / Lists ====== */
-.table{
+.table {
   width:100%; border-collapse: collapse; font-size: 15px; overflow: hidden;
   border-radius: 14px; border:1px solid color-mix(in oklab, var(--text), transparent 90%);
 }
-.table th, .table td{ padding:14px 12px; text-align:left; white-space:nowrap}
-.table thead th{
+.table th, .table td { padding:14px 12px; text-align:left; white-space:nowrap; }
+.table thead th {
   background: color-mix(in oklab, var(--panel-2), transparent 0%);
   color:var(--muted); font-weight:700; letter-spacing:.3px; font-size:13px; text-transform:uppercase;
 }
-.table tbody tr{ border-top:1px solid color-mix(in oklab, var(--text), transparent 90%)}
-.table tbody tr:hover{ background: color-mix(in oklab, var(--panel-2), transparent 15%)}
-
-/* ====== Labels / Pills ====== */
-.pill{
-  padding:4px 10px; border-radius:999px; font-size:12px;
-  border:1px solid color-mix(in oklab, var(--text), transparent 85%); color:var(--muted)
+.table tbody tr { border-top:1px solid color-mix(in oklab, var(--text), transparent 90%); transition: background .2s ease; }
+.table tbody tr:hover { background: color-mix(in oklab, var(--panel-2), transparent 15%); }
+/* File Preview Styling */
+.file-preview-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--text), transparent 85%);
 }
 
-/* ====== Alerts ====== */
-.alert{
+.file-preview-video {
+  width: 80px;
+  height: 60px;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--text), transparent 85%);
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .file-preview-img,
+  .file-preview-video {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .table thead { display:none; }
+  .table, .table tbody, .table tr, .table td { display:block; width:100%; }
+  .table tr { margin-bottom: 12px; }
+  .table td {
+    text-align: right; padding-left: 50%;
+    position: relative;
+  }
+  .table td::before {
+    content: attr(data-label);
+    position: absolute; left:16px; width:45%; padding-right:10px;
+    text-align:left; font-weight:600; color:var(--muted);
+  }
+}
+
+.pill {
+  padding:4px 10px; border-radius:999px; font-size:12px;
+  border:1px solid color-mix(in oklab, var(--text), transparent 85%); color:var(--muted);
+}
+
+.alert {
   padding:12px 14px; border-radius:12px; margin:12px 0;
   border:1px solid color-mix(in oklab, var(--text), transparent 85%);
   display:flex; align-items:center; gap:10px;
+  animation: fadeIn 0.3s ease;
 }
-.alert-success{ background: color-mix(in oklab, var(--success), transparent 88%); color:var(--text)}
-.alert-error{ background: color-mix(in oklab, var(--danger), transparent 88%); color:var(--text)}
+.alert-success { background: color-mix(in oklab, var(--success), transparent 88%); color:var(--text); }
+.alert-error { background: color-mix(in oklab, var(--danger), transparent 88%); color:var(--text); }
 
-/* ====== Utility ====== */
-.row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-.right{ margin-left:auto}
-.mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace}
-.mute{ color:var(--muted)}
-.spacer{ height:14px }
-.footer{ padding:28px 24px; color:var(--muted); text-align:center}
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+.row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.right { margin-left:auto; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+.mute { color:var(--muted); }
+.spacer { height:14px; }
+.footer { padding:28px 24px; color:var(--muted); text-align:center; margin-top: auto; }

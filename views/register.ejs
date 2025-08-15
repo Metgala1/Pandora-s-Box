@@ -1,16 +1,24 @@
 <h1>Register</h1>
+<p class="mute">Create an account to securely upload and manage your files.</p>
 
-<form action="/register" method="POST">
-  <label>Name:</label><br>
-  <input type="text" name="name" required><br>
+<form action="/register" method="POST" class="card">
+  <div class="field">
+    <label class="mute">Name</label>
+    <input class="input" type="text" name="name" required />
+  </div>
 
-  <label>Email:</label><br>
-  <input type="email" name="email" required><br>
+  <div class="field">
+    <label class="mute">Email</label>
+    <input class="input" type="email" name="email" required />
+  </div>
 
-  <label>Password:</label><br>
-  <input type="password" name="password" required><br><br>
+  <div class="field">
+    <label class="mute">Password</label>
+    <input class="input" type="password" name="password" required />
+  </div>
 
-  <button type="submit">Sign Up</button>
+  <div class="row" style="margin-top:12px;">
+    <button class="btn btn-primary" type="submit">Sign Up</button>
+    <a class="btn" href="/login">Login</a>
+  </div>
 </form>
-
-<p>Already have an account? <a href="/login">Login here</a></p>
