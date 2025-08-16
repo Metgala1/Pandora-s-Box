@@ -1,57 +1,45 @@
-<h1>My Files</h1>
-<p class="mute">All files you’ve uploaded. Click preview to view, download to save locally, or delete to remove.</p>
+<div class="container">
+  <h1>My Files</h1>
+  <p class="mute">All files you’ve uploaded. Click download to save locally, preview, or delete.</p>
 
-<% if (files.length === 0) { %>
-  <div class="card">
-    <p class="mute">No files uploaded yet.</p>
-    <a class="btn btn-primary" href="/upload">Upload your first file</a>
-  </div>
-<% } else { %>
-  <div class="card table-container">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Preview</th>
-          <th>File</th>
-          <th class="mute">Type</th>
-          <th class="mute">Size</th>
-          <th class="mute">Added</th>
-          <th class="right">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% files.forEach(file => { %>
-          <tr>
-            <td data-label="Preview">
-              <% if (file.mimetype.startsWith('image/')) { %>
-                <img src="<%= file.url %>" alt="Preview" class="file-preview-img" />
-              <% } else if (file.mimetype.startsWith('video/')) { %>
-                <video class="file-preview-video" controls>
-                  <source src="<%= file.url %>" type="<%= file.mimetype %>">
-                  Your browser does not support the video tag.
-                </video>
-              <% } else { %>
-                <span class="pill">No preview</span>
-              <% } %>
-            </td>
-            <td data-label="File"><span class="mono"><%= file.filename %></span></td>
-            <td data-label="Type" class="mute"><%= file.mimetype %></td>
-            <td data-label="Size" class="mute"><%= (file.size/1024).toFixed(1) %> KB</td>
-            <td data-label="Added" class="mute"><%= new Date(file.createdAt).toLocaleString() %></td>
-            <td class="right row" data-label="Actions">
-              <a class="btn btn-ghost" href="<%= file.url %>" target="_blank">Preview</a>
-              <a class="btn" href="/download/<%= file.id %>">Download</a>
-              <form action="/delete/<%= file.id %>" method="POST" onsubmit="return confirm('Delete this file? This cannot be undone.')">
-                <button class="btn btn-danger" type="submit">Delete</button>
-              </form>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
-<% } %>
+  <% if (files.length === 0) { %>
+    <div class="card no-files">
+      <p class="mute">No files uploaded yet.</p>
+      <a class="btn btn-primary" href="/upload">Upload your first file</a>
+    </div>
+  <% } else { %>
+    <div class="files-grid">
+      <% files.forEach(file => { %>
+        <div class="file-card">
+          <% if (file.mimetype.startsWith('image/')) { %>
+            <img src="<%= file.url %>" alt="<%= file.filename %>" class="file-preview">
+          <% } else if (file.mimetype.startsWith('video/')) { %>
+            <video class="file-preview" controls>
+              <source src="<%= file.url %>" type="<%= file.mimetype %>">
+              Your browser does not support video playback.
+            </video>
+          <% } else { %>
+            <div class="file-icon">📄</div>
+          <% } %>
 
-<div class="row" style="margin-top:14px">
-  <a class="btn btn-primary" href="/upload">Upload More</a>
+          <div class="file-info">
+            <span class="filename mono"><%= file.filename %></span>
+            <span class="file-meta mute"><%= file.mimetype %> • <%= (file.size/1024).toFixed(1) %> KB</span>
+            <span class="file-meta mute">Added: <%= new Date(file.createdAt).toLocaleString() %></span>
+          </div>
+
+          <div class="file-actions">
+            <a class="btn btn-primary" href="/download/<%= file.id %>">Download</a>
+            <form action="/delete/<%= file.id %>" method="POST" onsubmit="return confirm('Delete this file? This cannot be undone.')">
+              <button class="btn btn-danger" type="submit">Delete</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <div class="row" style="margin-top:14px">
+    <a class="btn btn-primary" href="/upload">Upload More</a>
+  </div>
 </div>

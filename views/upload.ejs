@@ -1,17 +1,99 @@
-<h1>Upload a File</h1>
-<p class="mute">Choose a file to upload. Max size depends on your server settings.</p>
+<div class="container">
+  <h1>Upload Files</h1>
+  <p class="mute">Drag and drop files here or click to select. Supports images, videos, and documents.</p>
 
-<form action="/upload" method="POST" enctype="multipart/form-data" class="card">
-  <div class="field">
-    <label class="mute">Select File</label>
-    <input class="input" type="file" name="file" required />
-  </div>
-
-  <div class="row" style="margin-top:12px;">
+  <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+    <div class="upload-dropzone" id="dropzone">
+      <p class="mute">Drop files here or click to browse</p>
+      <input type="file" name="file" id="fileInput" multiple hidden>
+    </div>
+    <div id="previewContainer"></div>
     <button class="btn btn-primary" type="submit">Upload</button>
-    <a class="btn" href="/files">My Files</a>
-  </div>
-</form>
+  </form>
 
-<div class="spacer"></div>
-<p class="mute">After uploading, you can download or delete your files from the "My Files" section.</p>
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<script>
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const previewContainer = document.getElementById('previewContainer');
+  const progressFill = document.getElementById('progressFill');
+
+  dropzone.addEventListener('click', () => fileInput.click());
+
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  });
+
+  dropzone.addEventListener('dragleave', () => {
+    dropzone.classList.remove('dragover');
+  });
+
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    fileInput.files = e.dataTransfer.files;
+    showPreviews(e.dataTransfer.files);
+  });
+
+  fileInput.addEventListener('change', (e) => showPreviews(e.target.files));
+
+  function showPreviews(files) {
+    previewContainer.innerHTML = '';
+    Array.from(files).forEach(file => {
+      const preview = document.createElement('div');
+      preview.classList.add('file-preview-item');
+
+      if (file.type.startsWith('image/')) {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        preview.appendChild(img);
+      } else if (file.type.startsWith('video/')) {
+        const video = document.createElement('video');
+        video.src = URL.createObjectURL(file);
+        video.controls = true;
+        preview.appendChild(video);
+      } else {
+        const icon = document.createElement('div');
+        icon.classList.add('file-icon');
+        icon.textContent = '📄';
+        preview.appendChild(icon);
+      }
+
+      const label = document.createElement('span');
+      label.textContent = file.name;
+      preview.appendChild(label);
+      previewContainer.appendChild(preview);
+    });
+  }
+
+  // Optional: progress bar for AJAX upload
+  const form = document.getElementById('uploadForm');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const files = fileInput.files;
+    if (!files.length) return alert('No file selected');
+    
+    const formData = new FormData();
+    formData.append('file', files[0]); // for simplicity, single file
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/upload');
+    
+    xhr.upload.addEventListener('progress', (e) => {
+      const percent = (e.loaded / e.total) * 100;
+      progressFill.style.width = percent + '%';
+    });
+
+    xhr.onload = () => {
+      if (xhr.status === 200) location.href = '/files';
+      else alert('Upload failed');
+    };
+
+    xhr.send(formData);
+  });
+</script>
