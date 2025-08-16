@@ -78,6 +78,6 @@ app.use((req, res, next) => {
 app.use("/", indexRouter);
 
 
-// Start server
+// Start server 
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

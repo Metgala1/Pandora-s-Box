@@ -1,6 +1,7 @@
 const {Router} = require("express")
 const router = Router()
 const {isAuthenticated} = require("../middleware/authMiddleWare")
+const { parser } = require("../config/multer");
 
 const authController = require("../controllers/authController");
 const fileController = require("../controllers/fileController");
@@ -14,7 +15,7 @@ router.post("/login", authController.postLogin)
 router.post("/logout", authController.logout)
 
 router.get("/upload", isAuthenticated, fileController.getUpload);
-router.post("/upload", isAuthenticated, fileController.postUpload);
+router.post("/upload", isAuthenticated, parser.single("file"), fileController.postUpload);
 
 router.get("/files", isAuthenticated, fileController.listFiles)
 
