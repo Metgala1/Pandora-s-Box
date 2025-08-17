@@ -10,6 +10,7 @@
 
 
 
+
 exports.postUpload = async (req, res) => {
   if (!req.file) {
     req.flash("error", "No file selected");
@@ -17,14 +18,14 @@ exports.postUpload = async (req, res) => {
   }
 
   try {
-    
     await prisma.file.create({
       data: {
-        filename: req.file.originalname,    
+        filename: req.file.originalname,
+        savedFilename: req.file.filename, // actual stored file
         mimetype: req.file.mimetype,
         size: req.file.size,
         userId: req.user.id,
-        url: `/uploads/${req.file.filename}`, 
+        url: `/uploads/${req.file.filename}`, // local path
       },
     });
 
@@ -32,7 +33,7 @@ exports.postUpload = async (req, res) => {
     res.redirect("/files");
   } catch (err) {
     console.error(err);
-    req.flash("error", "Something went wrong while uploading the file");
+    req.flash("error", "Something went wrong while uploading");
     res.redirect("/upload");
   }
 };
@@ -52,7 +53,6 @@ exports.postUpload = async (req, res) => {
     }
  }
 
-
 exports.downloadFile = async (req, res) => {
   try {
     const file = await prisma.file.findUnique({
@@ -64,8 +64,15 @@ exports.downloadFile = async (req, res) => {
       return res.redirect("/files");
     }
 
-    const filePath = path.join(__dirname, "../", file.url);
-    res.download(filePath, file.filename);
+    const filePath = path.join(__dirname, "../uploads", file.savedFilename);
+    res.download(filePath, file.filename, (err) => {
+      if (err) {
+        console.error(err);
+        req.flash("error", "Error downloading file");
+        res.redirect("/files");
+      }
+    });
+
   } catch (err) {
     console.error(err);
     req.flash("error", "Error downloading file");
@@ -85,21 +92,23 @@ exports.deleteFile = async (req, res) => {
       return res.redirect("/files");
     }
 
+    const filePath = path.join(__dirname, "../uploads", file.savedFilename);
 
-    const filePath = path.join(__dirname, "../", file.url);
-
+    // Remove from filesystem
     fs.unlink(filePath, (err) => {
       if (err && err.code !== "ENOENT") {
-        console.error("Error deleting file from filesystem:", err);
+        console.error("Error deleting file:", err);
       }
     });
 
+    // Remove from DB
     await prisma.file.delete({
       where: { id: parseInt(req.params.id) },
     });
 
     req.flash("success", "File deleted successfully");
     res.redirect("/files");
+
   } catch (err) {
     console.error(err);
     req.flash("error", "Error deleting file");
