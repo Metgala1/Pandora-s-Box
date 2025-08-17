@@ -1,5 +1,5 @@
 {
-  "name": "pandora-s-box",
+  "name": "Your App Name",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
@@ -23,6 +23,7 @@
   "dependencies": {
     "@prisma/client": "^6.14.0",
     "@quixo3/prisma-session-store": "^3.1.13",
+    "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
     "connect-flash": "^0.1.1",
@@ -38,5 +39,13 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-  }
+  },
+  "short_name": "App",
+  "icons": [
+    {
+      "src": "/icons/icon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
 }

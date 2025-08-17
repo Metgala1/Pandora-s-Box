@@ -1,6 +1,18 @@
 const multer = require("multer");
-const { storage } = require("../config/cloudinary");
+const path = require("path");
+
+// Save files in /uploads folder
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../uploads"));
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
 
 const upload = multer({ storage });
 
 module.exports = upload;
+
