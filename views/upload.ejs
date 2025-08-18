@@ -42,34 +42,44 @@
 
   fileInput.addEventListener('change', (e) => showPreviews(e.target.files));
 
-  function showPreviews(files) {
-    previewContainer.innerHTML = '';
-    Array.from(files).forEach(file => {
-      const preview = document.createElement('div');
-      preview.classList.add('file-preview-item');
+ function showPreviews(files) {
+  previewContainer.innerHTML = '';
 
-      if (file.type.startsWith('image/')) {
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        preview.appendChild(img);
-      } else if (file.type.startsWith('video/')) {
-        const video = document.createElement('video');
-        video.src = URL.createObjectURL(file);
-        video.controls = true;
-        preview.appendChild(video);
-      } else {
-        const icon = document.createElement('div');
-        icon.classList.add('file-icon');
-        icon.textContent = '📄';
-        preview.appendChild(icon);
-      }
+  Array.from(files).forEach(file => {
+    const preview = document.createElement('div');
+    preview.classList.add('file-preview-item');
 
-      const label = document.createElement('span');
-      label.textContent = file.name;
-      preview.appendChild(label);
-      previewContainer.appendChild(preview);
-    });
-  }
+    const icon = document.createElement('i');
+    icon.classList.add('file-icon', 'fa-solid');
+
+    if (file.type.startsWith('image/')) {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      preview.appendChild(img);
+    } else if (file.type.startsWith('video/')) {
+      icon.classList.add('fa-video'); // Video icon
+      preview.appendChild(icon);
+    } else if (file.type.startsWith('audio/')) {
+      icon.classList.add('fa-headphones'); // Audio icon
+      preview.appendChild(icon);
+    } else {
+      // Other file types based on extension
+      if (file.name.endsWith('.pdf')) icon.classList.add('fa-file-pdf');
+      else if (file.name.endsWith('.doc') || file.name.endsWith('.docx')) icon.classList.add('fa-file-word');
+      else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) icon.classList.add('fa-file-excel');
+      else if (file.name.endsWith('.ppt') || file.name.endsWith('.pptx')) icon.classList.add('fa-file-powerpoint');
+      else icon.classList.add('fa-file'); // fallback
+      preview.appendChild(icon);
+    }
+
+    const label = document.createElement('span');
+    label.textContent = file.name;
+    preview.appendChild(label);
+
+    previewContainer.appendChild(preview);
+  });
+}
+
 
   // Optional: progress bar for AJAX upload
   const form = document.getElementById('uploadForm');

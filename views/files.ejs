@@ -18,6 +18,11 @@
               <source src="<%= file.url %>" type="<%= file.mimetype %>">
               Your browser does not support video playback.
             </video>
+          <% } else if (file.mimetype.startsWith('audio/')) { %>
+            <audio class="file-preview" controls>
+              <source src="<%= file.url %>" type="<%= file.mimetype %>">
+              Your browser does not support audio playback.
+            </audio>
           <% } else { %>
             <div class="file-icon">📄</div>
           <% } %>
@@ -43,3 +48,4 @@
     <a class="btn btn-primary" href="/upload">Upload More</a>
   </div>
 </div>
+
