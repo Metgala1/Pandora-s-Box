@@ -52,6 +52,16 @@ body {
   width: 100%;
   margin: 0 auto;
 }
+.sign-up{
+  color: var(--success);
+  text-decoration: none;
+  font-weight: 600;
+}
+.log-in{
+  color: var(--brand);
+  text-decoration: none;
+  font-weight: 600;
+}
 
 .nav {
   position: sticky;
@@ -177,7 +187,7 @@ h2 {
 }
 
 .btn-ghost {
-  background: transparent;
+  background-color: var(--danger);
   border-color: color-mix(in oklab, var(--text), transparent 88%);
 }
 

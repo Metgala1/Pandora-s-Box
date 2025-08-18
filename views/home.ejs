@@ -2,8 +2,8 @@
 <p>Manage your files safely and easily!</p>
 
 <% if (!user) { %>
-  <p>Don't have an account yet? <a href="/register">Sign Up</a></p>
-  <p>Already have an account? <a href="/login">Login</a></p>
+  <p>Don't have an account yet? <a class="sign-up" href="/register">Sign Up</a></p>
+  <p>Already have an account? <a class="log-in" href="/login">Login</a></p>
 <% } else { %>
   <p>Hello, <%= user.name %>! <a href="/files">Go to your files</a></p>
   <div class="row" style="margin-top:12px;">
