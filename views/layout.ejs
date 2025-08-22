@@ -11,6 +11,7 @@
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
 />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 
 </head>
@@ -25,8 +26,6 @@
       </a>
       <nav class="row">
         <% if (user) { %>
-          <a href="/upload">Upload</a>
-          <a href="/files">My Files</a>
           <form action="/logout" method="POST" class="row" style="margin:0">
             <button class="btn btn-ghost" type="submit">Logout</button>
           </form>
@@ -58,6 +57,10 @@
   </main>
 
   <footer class="footer">
+    <% if (user) { %>
+  <%- include('partials/bottomnav') %>
+<% } %>
+
     © <%= new Date().getFullYear() %> Pandora’s Box By ATAGWE ROGER — secure, simple storage.
   </footer>
 

@@ -51,7 +51,186 @@ body {
 .container {
   width: 100%;
   margin: 0 auto;
+  flex: 2;
+
 }
+
+/* ===================== Home Page Styling ===================== */
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: var(--panel);
+  padding: 60px 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  margin-bottom: 40px;
+}
+
+.hero h1 {
+  font-size: clamp(36px, 4vw, 48px);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.hero p.tagline {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--panel-2);
+}
+
+/* Auth Section (Sign Up / Login) */
+.auth-section {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.auth-section h2 {
+  font-size: clamp(22px, 2vw, 26px);
+  margin-bottom: 16px;
+}
+
+.auth-section p {
+  font-size: 16px;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.auth-buttons .btn {
+  margin: 0 8px;
+  min-width: 140px;
+}
+
+/* Welcome Section for Logged-in Users */
+.welcome-section {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.welcome-section h2 {
+  font-size: clamp(24px, 2.2vw, 32px);
+  margin-bottom: 12px;
+}
+
+.welcome-section p {
+  font-size: 16px;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.quick-actions .btn {
+  margin: 0 8px;
+  min-width: 160px;
+}
+
+/* Features Section */
+.features {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.features h2 {
+  font-size: clamp(26px, 3vw, 32px);
+  margin-bottom: 24px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  justify-items: center;
+}
+
+.feature-card {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 24px 16px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
+}
+
+.feature-card i {
+  color: var(--brand);
+  margin-bottom: 12px;
+}
+
+.feature-card h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.feature-card p {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* Call-to-Action Section */
+.cta {
+  background: linear-gradient(135deg, var(--brand-2), var(--brand));
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--panel);
+  box-shadow: var(--shadow);
+  margin-bottom: 40px;
+}
+
+.cta h2 {
+  font-size: clamp(24px, 3vw, 36px);
+  margin-bottom: 16px;
+}
+
+.cta p {
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+/* Responsive Buttons in CTA */
+.cta .btn {
+  min-width: 160px;
+}
+
+/* Footer Section */
+.footer {
+  background: var(--panel);
+  border-top: 1px solid color-mix(in oklab, var(--text), transparent 90%);
+  padding: 28px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ================== Media Queries ================== */
+@media (max-width: 768px) {
+  .hero {
+    padding: 40px 12px;
+  }
+  .auth-section,
+  .welcome-section,
+  .cta {
+    padding: 24px 12px;
+  }
+  .feature-grid {
+    gap: 16px;
+  }
+}
+
+
 .sign-up{
   color: var(--success);
   text-decoration: none;
@@ -77,8 +256,9 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 14px 24px;
+  padding: 14px 10px;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .brand {
@@ -127,10 +307,10 @@ body {
 .card {
   background: linear-gradient(180deg, color-mix(in oklab, var(--panel), transparent 0%), color-mix(in oklab, var(--panel-2), transparent 0%));
   border: 1px solid color-mix(in oklab, var(--text), transparent 90%);
-  border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 22px;
   transition: transform .2s ease, box-shadow .2s ease;
+  width: 100%;
+  height: 100%;
 }
 
 .card:hover {
@@ -140,6 +320,8 @@ body {
 
 .grid {
   display: block;
+  width: 100%;
+  height: 100%;
 }
 
 h1 {
@@ -164,6 +346,7 @@ h2 {
   font-weight: 600;
   border: 1px solid color-mix(in oklab, var(--text), transparent 88%);
   transition: transform .05s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
+  text-decoration: none;
 }
 
 .btn:hover {
@@ -385,10 +568,38 @@ textarea {
     width: 45%;
   }
 }
+.nav-container{
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  height: 2.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(8px);
+  background: color-mix(in oklab, var(--muted), transparent 80%);
+  border-radius: 20px;
+}
+.nav-container i{
+  font-size: x-large;
+  font-weight: 900;
+  color: skyblue;
+}
+.nav-container i:hover{
+  color: white;
+  cursor: pointer;
+}
 
 .footer {
-  padding: 28px 24px;
+  flex-shrink: 0;
+  padding: 16px;
   color: var(--muted);
   text-align: center;
-  margin-top: auto;
+  background: color-mix(in oklab, var(--panel), transparent 10%);
+  border-top: 1px solid color-mix(in oklab, var(--text), transparent 92%);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  z-index: 50;
+  padding-bottom: 25px;
 }

@@ -1,13 +1,72 @@
-<h1>Welcome to Pandora's Box</h1>
-<p>Manage your files safely and easily!</p>
 
-<% if (!user) { %>
-  <p>Don't have an account yet? <a class="sign-up" href="/register">Sign Up</a></p>
-  <p>Already have an account? <a class="log-in" href="/login">Login</a></p>
-<% } else { %>
-  <p>Hello, <%= user.name %>! <a href="/files">Go to your files</a></p>
-  <div class="row" style="margin-top:12px;">
-    <a class="btn btn-primary" href="/upload">Upload New File</a>
-    <a class="btn" href="/files">View My Files</a>
-  </div>
-<% } %>
+  <header class="hero">
+    <div class="hero-content">
+      <h1><i class="fa-solid fa-box-archive"></i> Pandora's Box</h1>
+      <p class="tagline">Your personal cloud storage — safe, simple, and always accessible.</p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <% if (!user) { %>
+      <section class="auth-section">
+        <h2>Get Started</h2>
+        <p>Create a free account and start managing your files today.</p>
+        <div class="auth-buttons">
+          <a class="btn btn-primary" href="/register"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+          <a class="btn btn-secondary" href="/login"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+        </div>
+      </section>
+    <% } else { %>
+      <section class="welcome-section">
+        <h2>Welcome back, <%= user.name %> 👋</h2>
+        <p>Manage, preview, and share your files instantly.</p>
+        <div class="quick-actions">
+          <a style="text-decoration: none !important;" class="btn btn-primary" href="/upload"><i class="fa-solid fa-upload"></i> Upload New File</a>
+          <a style="text-decoration: none !important;"class="btn btn-secondary" href="/files"><i class="fa-solid fa-folder-open"></i> View My Files</a>
+        </div>
+      </section>
+    <% } %>
+
+    <section class="features">
+      <% if(!user) {%>
+           <h2>Why Pandora’s Box?</h2>
+      <%} %>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <i class="fa-solid fa-lock fa-2x"></i>
+          <h3>Secure</h3>
+          <p>Your files are encrypted and safe with us.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fa-solid fa-bolt fa-2x"></i>
+          <h3>Fast</h3>
+          <p>Quick uploads, previews, and downloads at your fingertips.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fa-solid fa-share-nodes fa-2x"></i>
+          <h3>Share</h3>
+          <p>Easily share files with friends or colleagues in one click.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fa-solid fa-mobile-screen fa-2x"></i>
+          <h3>Anywhere</h3>
+          <p>Access your files on desktop, tablet, or mobile seamlessly.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <h2 style="color: black;">Start Storing Smarter Today</h2>
+      <p>Pandora’s Box makes managing your files simple and professional.</p>
+      <% if (!user) { %>
+        <a class="btn btn-primary" href="/register"><i class="fa-solid fa-arrow-right"></i> Create Free Account</a>
+      <% } else { %>
+        <a s class="btn btn-primary" href="/files">
+  <i class="fa-solid fa-arrow-right"></i> Go To My Files
+</a>
+
+      <% } %>
+    </section>
+
+  </main>
