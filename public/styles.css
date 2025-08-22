@@ -29,24 +29,30 @@
 /* ===================== Base Styles ===================== */
 * {
   box-sizing: border-box;
+  border: none;
 }
 
-html, body {
-  height: 100%;
+html{
+  height: 100vh;
   margin: 0;
   padding: 0;
+  width: 100vw;
+  background-color: #0b0d10;
 }
 
 body {
   display: flex;
   flex-direction: column;
-  width: 100vw;
+  max-width: 1500px;
   font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
   color: var(--text);
   background: radial-gradient(1200px 700px at 10% -10%, rgba(110, 231, 242, 0.15), transparent 60%),
               radial-gradient(1200px 700px at 110% -20%, rgba(167, 139, 250, 0.15), transparent 60%),
               var(--bg);
   transition: background 0.3s ease, color 0.3s ease;
+  margin: auto;
+  padding: 0;
+  height: 100vh;
 }
 
 .container {
@@ -113,7 +119,7 @@ body {
 }
 
 .nav-container {
-  width: 100%;
+  width: 80%;
   display: flex;
   justify-content: space-around;
   height: 2.5rem;
@@ -121,7 +127,8 @@ body {
   margin-bottom: 1rem;
   backdrop-filter: blur(8px);
   background: color-mix(in oklab, var(--muted), transparent 80%);
-  border-radius: 20px;
+  border-radius: 20px;;
+  margin: auto;
 }
 
 .nav-container i {
@@ -497,7 +504,7 @@ textarea {
   bottom: 0;
   width: 100%;
   z-index: 50;
-  padding-bottom: 25px;
+  padding: 25px;
 }
 
 /* ===================== Auth Section Styles ===================== */
@@ -629,9 +636,18 @@ textarea {
   .file-preview-item {
     width: 45%;
   }
+   html, body{
+    width: 100vw;
+  }
+  .footer{
+    padding: 10px;
+  }
 }
 
 @media (max-width: 480px) {
+  html, body{
+    width: 100vw;
+  }
   .auth-section {
     padding: 0px;
     margin: 0 12px 32px 12px;
@@ -645,5 +661,8 @@ textarea {
   .auth-section .btn {
     width: 100%;
     min-width: unset;
+  }
+  .footer{
+    padding: 10px;
   }
 }
