@@ -488,7 +488,6 @@ textarea {
 /* ===================== Footer ===================== */
 .footer {
   flex-shrink: 0;
-  padding: 28px 24px;
   color: var(--muted);
   text-align: center;
   background: color-mix(in oklab, var(--panel), transparent 10%);
