@@ -1,5 +1,6 @@
  const prisma = require("../client/prisma")
  const fs = require("fs");
+const { type } = require("os");
  const path = require("path")
 
 
@@ -115,3 +116,22 @@ exports.deleteFile = async (req, res) => {
     res.redirect("/files");
   }
 };
+
+exports.getImages = async (req,res) => {
+  try{
+  const images = await prisma.file.findMany({
+      where: {
+        mimetype: {
+          startsWith: "image/", // filter only image MIME types
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  res.render("image", {files: images})
+  }catch(err){
+    console.error(err)
+    res.status(500).send("Server Error") 
+  }
+}

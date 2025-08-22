@@ -1,0 +1,141 @@
+/* ===================== Variables ===================== */
+:root {
+  --bg: #0b0d10;
+  --panel: #11141a;
+  --text: #e6e9ef;
+  --muted: #9aa4b2;
+  --brand: #6ee7f2;
+  --brand-2: #a78bfa;
+  --radius: 16px;
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* ===================== Base Styles ===================== */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(1200px 700px at 10% -10%, rgba(110, 231, 242, 0.15), transparent 60%),
+              radial-gradient(1200px 700px at 110% -20%, rgba(167, 139, 250, 0.15), transparent 60%),
+              var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===================== Development Card ===================== */
+.dev-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+}
+
+.dev-card {
+  background: linear-gradient(135deg, var(--panel), var(--panel));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 50px 40px;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+}
+
+.dev-card i {
+  color: var(--brand);
+  margin-bottom: 20px;
+  animation: bounce 2s infinite;
+}
+
+.dev-card h1 {
+  font-size: clamp(24px, 2.5vw, 36px);
+  margin-bottom: 12px;
+}
+
+.dev-card p {
+  font-size: 16px;
+  color: var(--muted);
+  margin-bottom: 30px;
+}
+
+/* ===================== Animated Dots ===================== */
+.dev-animation {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.dev-animation span {
+  display: block;
+  width: 12px;
+  height: 12px;
+  background: var(--brand);
+  border-radius: 50%;
+  animation: bounceDots 1.2s infinite ease-in-out;
+}
+
+.dev-animation span:nth-child(1) {
+  animation-delay: 0s;
+}
+.dev-animation span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.dev-animation span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounceDots {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-15px);
+  }
+  60% {
+    transform: translateY(-7px);
+  }
+}
+
+/* ===================== Button ===================== */
+.btn-home {
+  display: inline-block;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: var(--panel);
+  text-decoration: none;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-home:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* ===================== Responsive ===================== */
+@media (max-width: 480px) {
+  .dev-card {
+    padding: 40px 20px;
+  }
+}

@@ -23,6 +23,11 @@ router.get("/download/:id", isAuthenticated, fileController.downloadFile)
 
 router.post("/delete/:id", isAuthenticated, fileController.deleteFile)
 
+router.get("/images", isAuthenticated, fileController.getImages)
+router.get("/dev", isAuthenticated, (req,res) => {
+    res.render("development")
+})
+
 router.get("/", (req,res) => {
     res.render("home", {title: "Home"}) 
 }) 

@@ -1,0 +1,22 @@
+
+<div class="container">
+  <h1>My Images</h1>
+  <p class="mute">All uploaded image files</p>
+
+  <% if (files.length === 0) { %>
+    <div class="card no-files">
+      <p class="mute">No images uploaded yet.</p>
+    </div>
+  <% } else { %>
+    <div class="image-grid">
+      <% files.forEach(file => { %>
+        <div class="image-card">
+          <img src="<%= file.url %>" alt="<%= file.filename %>">
+          <p><%= file.filename %></p>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+
