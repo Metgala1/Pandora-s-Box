@@ -1,18 +1,24 @@
-
 <div class="container">
-  <h1>My Images</h1>
-  <p class="mute">All uploaded image files. Click to view, download, or delete.</p>
+  <h1>My Audio Files</h1>
+  <p class="mute">All audio files you’ve uploaded. Click play to listen, download to save locally, or delete.</p>
 
   <% if (files.length === 0) { %>
     <div class="card no-files">
-      <p class="mute">No images uploaded yet.</p>
-      <a class="btn btn-primary" href="/upload">Upload your first image</a>
+      <p class="mute">No audio files uploaded yet.</p>
+      <a class="btn btn-primary" href="/upload">Upload your first file</a>
     </div>
   <% } else { %>
     <div class="files-grid">
       <% files.forEach(file => { %>
         <div class="file-card">
-          <img src="<%= file.url %>" alt="<%= file.filename %>" class="file-preview">
+          <div class="file-icon">
+            <i class="fa fa-headphones"></i>
+          </div>
+
+          <audio class="audio-preview" controls>
+            <source src="<%= file.url %>" type="<%= file.mimetype %>">
+            Your browser does not support audio playback.
+          </audio>
 
           <div class="file-info">
             <span class="filename mono"><%= file.filename %></span>
@@ -35,5 +41,3 @@
     <a class="btn btn-primary" href="/upload">Upload More</a>
   </div>
 </div>
-
-

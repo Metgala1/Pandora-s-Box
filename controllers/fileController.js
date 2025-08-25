@@ -136,3 +136,46 @@ exports.getImages = async (req,res) => {
     res.status(500).send("Server Error") 
   }
 }
+
+exports.getVideos = async(req,res) => {
+  try{
+    const {id} = req.user
+    const videos = await prisma.file.findMany({
+      where: {
+        mimetype: {
+          startsWith: "video" || "mp4"
+        },
+        userId: id
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    })
+    res.render("videos", {files: videos})
+  }catch(err){
+    console.error(err)
+    res.status(500).send("server error") 
+  }
+}
+
+exports.getAudios = async (req,res) => {
+  try{
+    const {id} = req.user
+    const audio = await prisma.file.findMany({
+      where: {
+        mimetype: {
+          startsWith: "audio"
+        },
+        userId: id
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    })
+    res.render("audios", {files: audio})
+  }catch(err){
+    console.error(err)
+    res.status(500).send("Server error")
+
+  }
+}

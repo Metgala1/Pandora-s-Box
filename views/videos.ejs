@@ -1,0 +1,49 @@
+<div class="container">
+  <h1>My Videos</h1>
+  <p class="mute">All videos you’ve uploaded. Click play to watch, download to save locally, or delete.</p>
+
+  <% if (files.length === 0) { %>
+    <div class="card no-files">
+      <p class="mute">No videos uploaded yet.</p>
+      <a class="btn btn-primary" href="/upload">Upload your first video</a>
+    </div>
+  <% } else { %>
+    <div class="videos-grid">
+      <% files.forEach(file => { %>
+        <div class="video-card">
+          <video class="video-preview" controls>
+            <source src="<%= file.url %>" type="<%= file.mimetype %>">
+            Your browser does not support video playback.
+          </video>
+
+          <div class="video-info">
+            <span class="filename mono"><%= file.filename %></span>
+            <span class="file-meta mute"><%= file.mimetype %> • <%= (file.size / 1024).toFixed(1) %> KB</span>
+            <span class="file-meta mute">Added: <%= new Date(file.createdAt).toLocaleString() %></span>
+          </div>
+
+          <div class="video-actions">
+            <a class="btn btn-primary" href="/download/<%= file.id %>">
+              <i class="fa fa-download"></i> Download
+            </a>
+            <form action="/delete/<%= file.id %>" method="POST" onsubmit="return confirm('Delete this video? This cannot be undone.')">
+              <button class="btn btn-danger" type="submit">
+                <i class="fa fa-trash"></i> Delete
+              </button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <div class="row" style="margin-top: 14px;">
+    <a class="btn btn-primary" href="/upload">Upload More</a>
+  </div>
+</div>
+
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- Link external CSS -->
+<link rel="stylesheet" href="/videos.css">
