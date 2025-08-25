@@ -124,6 +124,7 @@ exports.getImages = async (req,res) => {
         mimetype: {
           startsWith: "image/", // filter only image MIME types
         },
+        userId: req.user.id
       },
       orderBy: {
         createdAt: "desc",
