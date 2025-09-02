@@ -32,4 +32,4 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT
+app.listen(PORT, () => console.log("server running"))
