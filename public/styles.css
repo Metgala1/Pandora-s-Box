@@ -15,16 +15,6 @@
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #fbfbfd;
-    --panel: #ffffff;
-    --panel-2: #f5f7fb;
-    --text: #0e1218;
-    --muted: #5a6679;
-    --ring: rgba(99, 102, 241, 0.25);
-  }
-}
 
 /* ===================== Base Styles ===================== */
 * {
