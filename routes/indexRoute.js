@@ -5,10 +5,8 @@ const upload = require("../middleware/uploadMiddleware");
 
 const authController = require("../controllers/authController");
 const fileController = require("../controllers/fileController");
-const { file } = require("../client/prisma");
 
-router.get("/register", authController.getRegister);
-router.post("/register", authController.postRegister);
+router.post("/signup", authController.s);
 
 router.get("/login", authController.getLogin)
 router.post("/login", authController.postLogin)
@@ -28,9 +26,6 @@ router.get("/images", isAuthenticated, fileController.getImages)
 router.get("/videos", isAuthenticated, fileController.getVideos)
 router.get("/audios", isAuthenticated, fileController.getAudios)
 
-router.get("/dev", isAuthenticated, (req,res) => {
-    res.render("development")
-})
 
 router.get("/", (req,res) => {
     res.render("home", {title: "Home"}) 

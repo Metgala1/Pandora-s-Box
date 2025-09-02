@@ -1,49 +1,82 @@
 const bcrypt = require("bcryptjs");
-const passport = require("passport");
+const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient()
+const { validationResult } = require("express-validator");
+const prisma = new PrismaClient();
 
-exports.getRegister = (req,res) => {
-    res.render("register", {title: "Register"})
-};
-
-exports.postRegister = async (req,res) => {
-    const {name, email, password} = req.body;
-    try{
-        const existingUser = await prisma.user.findUnique({where: {email: email}});
-        if(existingUser) {
-            req.flash("error", "Email already in use");
-            return res.redirect("/register")
-        }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await prisma.user.create({data: {name: name, password: hashedPassword, email: email}})
-
-        req.flash("Success", "Account created please log in")
-        res.redirect("/login")
-
-    }catch(err){
-       console.error(err)
-       req.flash("Error", "Something went wrong. Please retry");
-       res.redirect("/register")
+exports.signup = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-}
 
-exports.getLogin = (req,res) => {
-    res.render("login", {title: "Login"})
+    const { username, email, password } = req.body;
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+      },
+    });
+
+    const token = jwt.sign(
+      { id: newUser.id, email: newUser.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    return res.status(201).json({
+      message: "Signup successful",
+      token,
+      user: { id: newUser.id, email: newUser.email, username: newUser.username },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Something went wrong" });
+  }
 };
 
-exports.postLogin = passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/login",
-    failureFlash: true
-})
+exports.login = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-exports.logout = (req,res, next) => {
-    req.logout(err => {
-        if(err){
-            next(err)
-        }
-        req.flash("Success" , "You have logged out");
-        res.redirect("/")
-    })
-}
+    const { email, password } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(401).json({ message: "User not found" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid password" });
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    return res.status(200).json({
+      message: "Login successful",
+      token,
+      user: { id: user.id, email: user.email, username: user.username },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+exports.logout = async (req, res) => {
+  return res.json({ message: "Logged out successfully" });
+};
