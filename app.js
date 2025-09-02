@@ -20,15 +20,9 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const indexRouter = require("./routes/indexRoute");
 app.use("/", indexRouter);
 
-// Health check
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "API is running" });
-});
-
-// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: "Server Error" });
+  res.status(500).json({ message: "Server Error" }); 
 });
 
 // Start server
