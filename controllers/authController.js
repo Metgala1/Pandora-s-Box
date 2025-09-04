@@ -11,7 +11,7 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { username, email, password } = req.body;
+    const { name, email, password } = req.body;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -22,28 +22,23 @@ exports.signup = async (req, res) => {
 
     const newUser = await prisma.user.create({
       data: {
-        username,
+        name,
         email,
         password: hashedPassword,
       },
     });
 
-    const token = jwt.sign(
-      { id: newUser.id, email: newUser.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
     return res.status(201).json({
       message: "Signup successful",
-      token,
-      user: { id: newUser.id, email: newUser.email, username: newUser.username },
+      user: { id: newUser.id, email: newUser.email, name: newUser.name },
     });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Something went wrong" });
+    res.status(500).json({ message: err.message || "Something went wrong" });
   }
 };
+
 
 exports.login = async (req, res) => {
   try {

@@ -3,7 +3,7 @@ const { body } = require("express-validator");
 const signupValidation = [
   body("email").isEmail().normalizeEmail(),
   body("password").isLength({ min: 6 }).trim().escape(),
-  body("username").isLength({ min: 3 }).trim().escape(),
+  body("name").isLength({ min: 3 }).trim().escape(),
 ];
 
 const loginValidation = [
