@@ -6,16 +6,25 @@ const prisma = new PrismaClient();
 
 exports.signup = async (req, res) => {
   try {
+    // Validate input
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: errors.array(),
+      });
     }
 
     const { name, email, password } = req.body;
 
+    // Check if email already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already in use" });
+      return res.status(400).json({
+        success: false,
+        message: "Email already in use",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -29,16 +38,22 @@ exports.signup = async (req, res) => {
     });
 
     return res.status(201).json({
+      success: true,
       message: "Signup successful",
-      user: { id: newUser.id, email: newUser.email, name: newUser.name },
+      user: {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+      },
     });
-
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message || "Something went wrong" });
+    console.error("Signup error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
   }
 };
-
 
 exports.login = async (req, res) => {
   try {
