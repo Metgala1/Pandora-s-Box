@@ -71,7 +71,7 @@ exports.login = async (req, res) => {
     if (!isMatch) return res.status(401).json({ message: "Invalid password" });
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, username: user.name },
       process.env.SESSION_SECRET,
       { expiresIn: "1h" }
     );
@@ -79,7 +79,7 @@ exports.login = async (req, res) => {
     return res.status(200).json({
       message: "Login successful",
       token,
-      user: { id: user.id, email: user.email, username: user.username },
+      user: { id: user.id, email: user.email, username: user.name },
     });
   } catch (err) {
     console.error(err);
