@@ -72,7 +72,7 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign(
       { id: user.id, email: user.email, username: user.name },
-      process.env.SESSION_SECRET
+      process.env.SESSION_SECRET,
     );
 
     return res.status(200).json({
