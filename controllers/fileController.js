@@ -1,59 +1,47 @@
- const prisma = require("../client/prisma")
- const fs = require("fs");
-const { type } = require("os");
- const path = require("path")
+const prisma = require("../client/prisma");
+const fs = require("fs");
+const path = require("path");
 
-
-
- exports.getUpload = (req,res) => {
-    res.render("upload", {title: "Upload File", user: req.user})
- }
-
-
-
-
+// Upload a file
 exports.postUpload = async (req, res) => {
   if (!req.file) {
-    req.flash("error", "No file selected");
-    return res.redirect("/upload");
+    return res.status(400).json({ message: "No file selected" });
   }
 
   try {
-    await prisma.file.create({
+    const newFile = await prisma.file.create({
       data: {
         filename: req.file.originalname,
-        savedFilename: req.file.filename, // actual stored file
+        savedFilename: req.file.filename,
         mimetype: req.file.mimetype,
         size: req.file.size,
         userId: req.user.id,
-        url: `/uploads/${req.file.filename}`, // local path
+        url: `/uploads/${req.file.filename}`, // or your public URL
       },
     });
 
-    req.flash("success", "File uploaded successfully");
-    res.redirect("/files");
+    res.status(201).json({ message: "File uploaded successfully", file: newFile });
   } catch (err) {
     console.error(err);
-    req.flash("error", "Something went wrong while uploading");
-    res.redirect("/upload");
+    res.status(500).json({ message: "Error uploading file" });
   }
 };
 
+// List all files for user
+exports.listFiles = async (req, res) => {
+  try {
+    const files = await prisma.file.findMany({
+      where: { userId: req.user.id },
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(files);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Could not fetch files" });
+  }
+};
 
- exports.listFiles = async (req,res) => {
-    try{
-        const files = await prisma.file.findMany({
-            where: {userId: req.user.id},
-            orderBy: {createdAt: "desc"}
-        });
-        res.render("files", {title: "My Files", files, user: req.user})
-    }catch(err) {
-        console.error(err);
-        req.flash("error", "Could not fetch file.");
-        res.redirect("/")
-    }
- }
-
+// Download a file
 exports.downloadFile = async (req, res) => {
   try {
     const file = await prisma.file.findUnique({
@@ -61,27 +49,23 @@ exports.downloadFile = async (req, res) => {
     });
 
     if (!file) {
-      req.flash("error", "File not found");
-      return res.redirect("/files");
+      return res.status(404).json({ message: "File not found" });
     }
 
     const filePath = path.join(__dirname, "../uploads", file.savedFilename);
     res.download(filePath, file.filename, (err) => {
       if (err) {
         console.error(err);
-        req.flash("error", "Error downloading file");
-        res.redirect("/files");
+        res.status(500).json({ message: "Error downloading file" });
       }
     });
-
   } catch (err) {
     console.error(err);
-    req.flash("error", "Error downloading file");
-    res.redirect("/files");
+    res.status(500).json({ message: "Server error" });
   }
 };
-
-
+ 
+// Delete a file
 exports.deleteFile = async (req, res) => {
   try {
     const file = await prisma.file.findUnique({
@@ -89,8 +73,7 @@ exports.deleteFile = async (req, res) => {
     });
 
     if (!file) {
-      req.flash("error", "File not found");
-      return res.redirect("/files");
+      return res.status(404).json({ message: "File not found" });
     }
 
     const filePath = path.join(__dirname, "../uploads", file.savedFilename);
@@ -103,79 +86,62 @@ exports.deleteFile = async (req, res) => {
     });
 
     // Remove from DB
-    await prisma.file.delete({
-      where: { id: parseInt(req.params.id) },
-    });
+    await prisma.file.delete({ where: { id: file.id } });
 
-    req.flash("success", "File deleted successfully");
-    res.redirect("/files");
-
+    res.json({ message: "File deleted successfully" });
   } catch (err) {
     console.error(err);
-    req.flash("error", "Error deleting file");
-    res.redirect("/files");
+    res.status(500).json({ message: "Error deleting file" });
   }
 };
 
-exports.getImages = async (req,res) => {
-  try{
-  const images = await prisma.file.findMany({
+// Get all images
+exports.getImages = async (req, res) => {
+  try {
+    const images = await prisma.file.findMany({
       where: {
-        mimetype: {
-          startsWith: "image/", // filter only image MIME types
-        },
-        userId: req.user.id
+        userId: req.user.id,
+        mimetype: { startsWith: "image/" },
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: { createdAt: "desc" },
     });
-  res.render("image", {files: images})
-  }catch(err){
-    console.error(err)
-    res.status(500).send("Server Error") 
+    res.json(images);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-}
+};
 
-exports.getVideos = async(req,res) => {
-  try{
-    const {id} = req.user
+// Get all videos
+exports.getVideos = async (req, res) => {
+  try {
     const videos = await prisma.file.findMany({
       where: {
-        mimetype: {
-          startsWith: "video" || "mp4"
-        },
-        userId: id
+        userId: req.user.id,
+        mimetype: { startsWith: "video/" },
       },
-      orderBy: {
-        createdAt: "desc"
-      }
-    })
-    res.render("videos", {files: videos})
-  }catch(err){
-    console.error(err)
-    res.status(500).send("server error") 
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(videos);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-}
+};
 
-exports.getAudios = async (req,res) => {
-  try{
-    const {id} = req.user
-    const audio = await prisma.file.findMany({
+// Get all audios
+exports.getAudios = async (req, res) => {
+  try {
+    const audios = await prisma.file.findMany({
       where: {
-        mimetype: {
-          startsWith: "audio"
-        },
-        userId: id
+        userId: req.user.id,
+        mimetype: { startsWith: "audio/" },
       },
-      orderBy: {
-        createdAt: "desc"
-      }
-    })
-    res.render("audios", {files: audio})
-  }catch(err){
-    console.error(err)
-    res.status(500).send("Server error")
-
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(audios);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-}
+};

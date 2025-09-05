@@ -1,13 +1,28 @@
-exports.isAuthenticated = async (req, res, next) => {
-    try {
-        if (req.isAuthenticated()) {
-            return next();
+const prisma = require("../client/prisma");
+const jwt = require("jsonwebtoken");
+
+exports.isAuthenticated = async (req, res, next)=> {
+    try{
+        const authHeader = req.headers.authorization;
+
+        if(!authHeader || !authHeader.startsWith("Bearer")){
+        res.status(401).json({message: "You must login first"})
         }
-        req.flash("error", "You must be logged in");
-        res.redirect("/login");
-    } catch (err) {
-        console.error("Auth check failed:", err);
-        req.flash("error", "Something went wrong. Please try again.");
-        res.redirect("/login");
+        const token = authHeader.split(" ")[1];
+
+        const decoded = jwt.verify(token, process.env.SESSION_SECRET);
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id: decoded.id
+            }
+        })
+        req.user = user;// attack user info to the request
+        next()
+
+    }catch(err){
+        console.error("Auth check failed")
+       return res.status(401).json({message: "Authentication failed"})
     }
-};
+
+}
