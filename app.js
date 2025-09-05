@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const path = require("path");
 const cors = require("cors"); // to allow React frontend requests
+const morgan = require("morgan")
 
 dotenv.config();
 const app = express();
@@ -17,6 +18,7 @@ app.use(
 );
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan("dev"))
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
