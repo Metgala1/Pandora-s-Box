@@ -23,7 +23,7 @@ router.post(
 
 router.get("/files", isAuthenticated, fileController.listFiles);
 router.get("/download/:id", isAuthenticated, fileController.downloadFile);
-router.post("/delete/:id", isAuthenticated, fileController.deleteFile);
+router.delete("/delete/:id", isAuthenticated, fileController.deleteFile);
 
 router.get("/images", isAuthenticated, fileController.getImages);
 router.get("/videos", isAuthenticated, fileController.getVideos);
