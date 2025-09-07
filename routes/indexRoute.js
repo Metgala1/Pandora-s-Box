@@ -28,5 +28,6 @@ router.delete("/delete/:id", isAuthenticated, fileController.deleteFile);
 router.get("/images", isAuthenticated, fileController.getImages);
 router.get("/videos", isAuthenticated, fileController.getVideos);
 router.get("/audios", isAuthenticated, fileController.getAudios);
+router.get("/documents", isAuthenticated, fileController.getDocuments)
 
 module.exports = router;

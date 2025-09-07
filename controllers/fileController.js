@@ -41,7 +41,7 @@ exports.listFiles = async (req, res) => {
   }
 };
 
-// Download a file
+
 exports.downloadFile = async (req, res) => {
   try {
     const file = await prisma.file.findUnique({
@@ -53,18 +53,23 @@ exports.downloadFile = async (req, res) => {
     }
 
     const filePath = path.join(__dirname, "../uploads", file.savedFilename);
-    res.download(filePath, file.filename, (err) => {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ message: "Error downloading file" });
-      }
-    });
+
+    // Check if file actually exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: "File does not exist on server" });
+    }
+
+    // Set proper headers for download
+    res.setHeader("Content-Disposition", `attachment; filename="${file.filename}"`);
+    res.setHeader("Content-Type", file.mimetype);
+
+    // Send the file
+    res.sendFile(filePath);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 };
- 
 // Delete a file
 exports.deleteFile = async (req, res) => {
   try {
@@ -140,6 +145,25 @@ exports.getAudios = async (req, res) => {
       orderBy: { createdAt: "desc" },
     });
     res.json(audios);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getDocuments = async (req, res) => {
+  try {
+    const documents = await prisma.file.findMany({
+      where: {
+        userId: req.user.id,
+        OR: [
+          { mimetype: { startsWith: "application/" } },
+          { mimetype: { startsWith: "text/" } },
+        ],
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(documents);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
