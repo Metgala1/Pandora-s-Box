@@ -1,24 +1,28 @@
 const { Router } = require("express");
 const router = Router();
 const { isAuthenticated } = require("../middleware/authMiddleWare");
-const upload = require("../middleware/uploadMiddleware");
-const {   signupValidation,loginValidation,uploadValidation, } = require("../middleware/validationMiddleware");
+const upload = require("../middleware/uploadMiddleware"); // updated memory storage
+const {
+  signupValidation,
+  loginValidation,
+  uploadValidation,
+} = require("../middleware/validationMiddleware");
 
 const authController = require("../controllers/authController");
 const fileController = require("../controllers/fileController");
 
-// Auth
+// ===================== Auth Routes =====================
 router.post("/signup", signupValidation, authController.signup);
 router.post("/login", loginValidation, authController.login);
 router.post("/logout", authController.logout);
-router.put("change-password", authController.updatePassword)
+router.put("/change-password", authController.updatePassword);
 
-// Files
+// ===================== File Routes =====================
 router.post(
   "/upload",
   isAuthenticated,
   uploadValidation,
-  upload.single("file"),
+  upload.single("file"), // memory storage multer
   fileController.postUpload
 );
 
@@ -29,6 +33,6 @@ router.delete("/delete/:id", isAuthenticated, fileController.deleteFile);
 router.get("/images", isAuthenticated, fileController.getImages);
 router.get("/videos", isAuthenticated, fileController.getVideos);
 router.get("/audios", isAuthenticated, fileController.getAudios);
-router.get("/documents", isAuthenticated, fileController.getDocuments)
+router.get("/documents", isAuthenticated, fileController.getDocuments);
 
 module.exports = router;

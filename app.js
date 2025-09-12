@@ -27,7 +27,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const indexRouter = require("./routes/indexRoute");
 app.use("/", indexRouter);
 
-app.use((err, req, res, next) => {
+app.use((err, req, res, next) => { 
   console.error(err.stack);
   res.status(500).json({ message: "Server Error" }); 
 });

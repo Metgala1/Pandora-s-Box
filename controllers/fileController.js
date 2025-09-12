@@ -1,6 +1,7 @@
 const prisma = require("../client/prisma");
-const fs = require("fs");
-const path = require("path");
+const cloudinary = require("../utils/cloudinary");
+const streamifier = require("streamifier");
+const { v4: uuidv4 } = require("uuid");
 
 // Upload a file
 exports.postUpload = async (req, res) => {
@@ -9,21 +10,36 @@ exports.postUpload = async (req, res) => {
   }
 
   try {
+    const publicId = `pandoras-box/${uuidv4()}`;
+
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "pandoras-box", public_id: publicId, resource_type: "auto" },
+        (err, result) => {
+          if (err) return reject(err);
+          resolve(result);
+        }
+      );
+      streamifier.createReadStream(req.file.buffer).pipe(stream);
+    });
+
     const newFile = await prisma.file.create({
       data: {
         filename: req.file.originalname,
-        savedFilename: req.file.filename,
         mimetype: req.file.mimetype,
         size: req.file.size,
         userId: req.user.id,
-        url: `/uploads/${req.file.filename}`, // or your public URL
+        url: result.secure_url,
+        cloudinary_public_id: result.public_id,
+        storage: "cloudinary",
+        format: result.format,
       },
     });
 
     res.status(201).json({ message: "File uploaded successfully", file: newFile });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error uploading file" });
+    res.status(500).json({ message: "Error uploading file", details: err.message });
   }
 };
 
@@ -41,7 +57,7 @@ exports.listFiles = async (req, res) => {
   }
 };
 
-
+// Download a file (redirect to Cloudinary)
 exports.downloadFile = async (req, res) => {
   try {
     const file = await prisma.file.findUnique({
@@ -52,24 +68,18 @@ exports.downloadFile = async (req, res) => {
       return res.status(404).json({ message: "File not found" });
     }
 
-    const filePath = path.join(__dirname, "../uploads", file.savedFilename);
-
-    // Check if file actually exists
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ message: "File does not exist on server" });
+    if (file.storage === "cloudinary") {
+      return res.redirect(file.url);
     }
 
-    // Set proper headers for download
-    res.setHeader("Content-Disposition", `attachment; filename="${file.filename}"`);
-    res.setHeader("Content-Type", file.mimetype);
-
-    // Send the file
-    res.sendFile(filePath);
+    // Optional fallback for local files
+    res.status(400).json({ message: "File not stored in Cloudinary" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 // Delete a file
 exports.deleteFile = async (req, res) => {
   try {
@@ -81,16 +91,10 @@ exports.deleteFile = async (req, res) => {
       return res.status(404).json({ message: "File not found" });
     }
 
-    const filePath = path.join(__dirname, "../uploads", file.savedFilename);
+    if (file.storage === "cloudinary") {
+      await cloudinary.uploader.destroy(file.cloudinary_public_id, { resource_type: "auto" });
+    }
 
-    // Remove from filesystem
-    fs.unlink(filePath, (err) => {
-      if (err && err.code !== "ENOENT") {
-        console.error("Error deleting file:", err);
-      }
-    });
-
-    // Remove from DB
     await prisma.file.delete({ where: { id: file.id } });
 
     res.json({ message: "File deleted successfully" });
@@ -151,6 +155,7 @@ exports.getAudios = async (req, res) => {
   }
 };
 
+// Get all documents
 exports.getDocuments = async (req, res) => {
   try {
     const documents = await prisma.file.findMany({

@@ -48,17 +48,20 @@ model Folder {
 }
 
 model File {
-  id          Int       @id @default(autoincrement())
-  filename    String
-  savedFilename  String?
-  url         String    // for cloud storage URL or local path
-  size        Int       // size in bytes
-  mimetype    String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  userId      Int
-  folderId    Int?
+  id                  Int       @id @default(autoincrement())
+  filename            String
+  savedFilename       String?   // for local files
+  url                 String    // Cloudinary URL or local path
+  size                Int       // size in bytes
+  mimetype            String
+  storage             String    @default("local") // "local" or "cloudinary"
+  cloudinary_public_id String?   // for Cloudinary
+  format              String?    // file format for Cloudinary (e.g., mp4, jpg)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  userId              Int
+  folderId            Int?
 
-  user        User      @relation(fields: [userId], references: [id])
-  folder      Folder?   @relation(fields: [folderId], references: [id])
+  user                User      @relation(fields: [userId], references: [id])
+  folder              Folder?   @relation(fields: [folderId], references: [id])
 }
