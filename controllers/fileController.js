@@ -101,18 +101,36 @@ exports.deleteFile = async (req, res) => {
       return res.status(404).json({ message: "File not found" });
     }
 
-    if (file.storage === "cloudinary") {
-      await cloudinary.uploader.destroy(file.cloudinary_public_id, { resource_type: "auto" });
+    if (file.storage === "cloudinary" && file.cloudinary_public_id) {
+      let resourceType = "image";
+      if (file.mimetype.startsWith("video") || file.mimetype.startsWith("audio")) {
+        resourceType = "video";
+      } else if (
+        !file.mimetype.startsWith("image") &&
+        !file.mimetype.startsWith("video") &&
+        !file.mimetype.startsWith("audio")
+      ) {
+        resourceType = "raw";
+      }
+
+      const result = await cloudinary.uploader.destroy(file.cloudinary_public_id, {
+        resource_type: resourceType,
+      });
+
+      if (result.result !== "ok" && result.result !== "not found") {
+        return res.status(500).json({ message: "Cloudinary delete failed" });
+      }
     }
 
     await prisma.file.delete({ where: { id: file.id } });
 
     res.json({ message: "File deleted successfully" });
   } catch (err) {
-    console.error(err);
+    console.error("Delete error:", err);
     res.status(500).json({ message: "Error deleting file" });
   }
 };
+
 
 // Get all images
 exports.getImages = async (req, res) => {
