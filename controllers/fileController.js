@@ -2,6 +2,7 @@ const prisma = require("../client/prisma");
 const cloudinary = require("../utils/cloudinary");
 const streamifier = require("streamifier");
 const { v4: uuidv4 } = require("uuid");
+const axios = require("axios");
 
 // Upload a file
 exports.postUpload = async (req, res) => {
@@ -58,6 +59,8 @@ exports.listFiles = async (req, res) => {
 };
 
 // Download a file (redirect to Cloudinary)
+
+
 exports.downloadFile = async (req, res) => {
   try {
     const file = await prisma.file.findUnique({
@@ -69,16 +72,23 @@ exports.downloadFile = async (req, res) => {
     }
 
     if (file.storage === "cloudinary") {
-      return res.redirect(file.url);
+      // Stream file from Cloudinary to client
+      const response = await axios.get(file.url, { responseType: "stream" });
+
+      res.setHeader("Content-Disposition", `attachment; filename="${file.filename}"`);
+      res.setHeader("Content-Type", file.mimetype);
+
+      response.data.pipe(res);
+      return;
     }
 
-    // Optional fallback for local files
     res.status(400).json({ message: "File not stored in Cloudinary" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 // Delete a file
 exports.deleteFile = async (req, res) => {
