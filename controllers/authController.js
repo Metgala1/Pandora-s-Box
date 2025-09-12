@@ -86,6 +86,38 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.updatePassword = async (req,res) => {
+  try{
+  const {email, password} = req.body;
+
+  if(!email || !password){
+   return res.json({message: "An email and password is required"})
+  }
+
+  const existingEmail = await prisma.user.findUnique({
+    where:  email
+  })
+
+  if(!existingEmail){
+   return res.json({message: "This email does not exist"})
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  await prisma.user.update({
+    where: {email},
+    data: {password: hashedPassword},
+  })
+
+  return res.json({message: "Password updated successfully"})
+  } catch(err){
+    console.error(err)
+    res.json({error: err.message})
+  }
+
+
+}
+
 exports.logout = async (req, res) => {
   return res.json({ message: "Logged out successfully" });
 };
