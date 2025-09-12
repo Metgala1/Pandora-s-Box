@@ -11,6 +11,7 @@ const fileController = require("../controllers/fileController");
 router.post("/signup", signupValidation, authController.signup);
 router.post("/login", loginValidation, authController.login);
 router.post("/logout", authController.logout);
+router.put("change-password", authController.updatePassword)
 
 // Files
 router.post(
