@@ -1,45 +1,45 @@
+// controllers/fileController.js
 const prisma = require("../client/prisma");
-const cloudinary = require("../utils/cloudinary");
-const streamifier = require("streamifier");
+const supabase = require("../config/supabase");
 const { v4: uuidv4 } = require("uuid");
-const axios = require("axios");
 
 // Upload a file
 exports.postUpload = async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No file selected" });
-  }
+  if (!req.file) return res.status(400).json({ message: "No file selected" });
 
   try {
-    const publicId = `pandoras-box/${uuidv4()}`;
+    const uniqueName = `${uuidv4()}-${req.file.originalname}`;
 
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "pandoras-box", public_id: publicId, resource_type: "auto" },
-        (err, result) => {
-          if (err) return reject(err);
-          resolve(result);
-        }
-      );
-      streamifier.createReadStream(req.file.buffer).pipe(stream);
-    });
+    // Upload to Supabase
+    const { error } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET_NAME)
+      .upload(uniqueName, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false,
+      });
+    if (error) throw error;
 
+    // Get public URL
+    const { data } = supabase.storage
+      .from(process.env.SUPABASE_BUCKET_NAME)
+      .getPublicUrl(uniqueName);
+
+    // Save metadata to DB
     const newFile = await prisma.file.create({
       data: {
         filename: req.file.originalname,
-        mimetype: req.file.mimetype,
+        url: data.publicUrl,
         size: req.file.size,
+        mimetype: req.file.mimetype,
+        storage: "supabase",
+        format: req.file.mimetype.split("/")[1] || null,
         userId: req.user.id,
-        url: result.secure_url,
-        cloudinary_public_id: result.public_id,
-        storage: "cloudinary",
-        format: result.format,
       },
     });
 
     res.status(201).json({ message: "File uploaded successfully", file: newFile });
   } catch (err) {
-    console.error(err);
+    console.error("Upload error:", err);
     res.status(500).json({ message: "Error uploading file", details: err.message });
   }
 };
@@ -58,37 +58,21 @@ exports.listFiles = async (req, res) => {
   }
 };
 
-// Download a file (redirect to Cloudinary)
-
-
+// Download a file
 exports.downloadFile = async (req, res) => {
   try {
     const file = await prisma.file.findUnique({
       where: { id: parseInt(req.params.id) },
     });
+    if (!file) return res.status(404).json({ message: "File not found" });
 
-    if (!file) {
-      return res.status(404).json({ message: "File not found" });
-    }
-
-    if (file.storage === "cloudinary") {
-      // Stream file from Cloudinary to client
-      const response = await axios.get(file.url, { responseType: "stream" });
-
-      res.setHeader("Content-Disposition", `attachment; filename="${file.filename}"`);
-      res.setHeader("Content-Type", file.mimetype);
-
-      response.data.pipe(res);
-      return;
-    }
-
-    res.status(400).json({ message: "File not stored in Cloudinary" });
+    // For Supabase, URLs are public
+    res.redirect(file.url);
   } catch (err) {
-    console.error(err);
+    console.error("Download error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 // Delete a file
 exports.deleteFile = async (req, res) => {
@@ -96,32 +80,18 @@ exports.deleteFile = async (req, res) => {
     const file = await prisma.file.findUnique({
       where: { id: parseInt(req.params.id) },
     });
+    if (!file) return res.status(404).json({ message: "File not found" });
 
-    if (!file) {
-      return res.status(404).json({ message: "File not found" });
-    }
+    // Extract stored filename from URL
+    const filename = file.url.split("/").pop();
 
-    if (file.storage === "cloudinary" && file.cloudinary_public_id) {
-      let resourceType = "image";
-      if (file.mimetype.startsWith("video") || file.mimetype.startsWith("audio")) {
-        resourceType = "video";
-      } else if (
-        !file.mimetype.startsWith("image") &&
-        !file.mimetype.startsWith("video") &&
-        !file.mimetype.startsWith("audio")
-      ) {
-        resourceType = "raw";
-      }
+    // Delete from Supabase
+    const { error } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET_NAME)
+      .remove([filename]);
+    if (error) throw error;
 
-      const result = await cloudinary.uploader.destroy(file.cloudinary_public_id, {
-        resource_type: resourceType,
-      });
-
-      if (result.result !== "ok" && result.result !== "not found") {
-        return res.status(500).json({ message: "Cloudinary delete failed" });
-      }
-    }
-
+    // Delete from DB
     await prisma.file.delete({ where: { id: file.id } });
 
     res.json({ message: "File deleted successfully" });
@@ -131,15 +101,11 @@ exports.deleteFile = async (req, res) => {
   }
 };
 
-
 // Get all images
 exports.getImages = async (req, res) => {
   try {
     const images = await prisma.file.findMany({
-      where: {
-        userId: req.user.id,
-        mimetype: { startsWith: "image/" },
-      },
+      where: { userId: req.user.id, mimetype: { startsWith: "image/" } },
       orderBy: { createdAt: "desc" },
     });
     res.json(images);
@@ -153,10 +119,7 @@ exports.getImages = async (req, res) => {
 exports.getVideos = async (req, res) => {
   try {
     const videos = await prisma.file.findMany({
-      where: {
-        userId: req.user.id,
-        mimetype: { startsWith: "video/" },
-      },
+      where: { userId: req.user.id, mimetype: { startsWith: "video/" } },
       orderBy: { createdAt: "desc" },
     });
     res.json(videos);
@@ -170,10 +133,7 @@ exports.getVideos = async (req, res) => {
 exports.getAudios = async (req, res) => {
   try {
     const audios = await prisma.file.findMany({
-      where: {
-        userId: req.user.id,
-        mimetype: { startsWith: "audio/" },
-      },
+      where: { userId: req.user.id, mimetype: { startsWith: "audio/" } },
       orderBy: { createdAt: "desc" },
     });
     res.json(audios);
