@@ -59,18 +59,57 @@ exports.listFiles = async (req, res) => {
 };
 
 // Download a file
+const fetch = require("node-fetch");
+
 exports.downloadFile = async (req, res) => {
   try {
-    const file = await prisma.file.findUnique({
-      where: { id: parseInt(req.params.id) },
-    });
-    if (!file) return res.status(404).json({ message: "File not found" });
+    const fileId = parseInt(req.params.id, 10);
+    if (isNaN(fileId)) {
+      return res.status(400).json({ message: "Invalid file ID" });
+    }
 
-    // For Supabase, URLs are public
-    res.redirect(file.url);
+    const file = await prisma.file.findUnique({
+      where: { id: fileId },
+      select: { id: true, name: true, url: true }, // Only fetch needed fields
+    });
+
+    if (!file) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    const response = await fetch(file.url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch file from source: ${response.status} ${response.statusText}`);
+    }
+
+    // Use original filename if available, fallback to safe default
+    const originalName = file.name?.trim();
+    const safeFilename = originalName && originalName.length > 0 
+      ? originalName 
+      : `file-${fileId}`;
+
+    // Sanitize filename to prevent header injection
+    const encodedFilename = encodeURIComponent(safeFilename);
+
+    // Determine content type (fallback to octet-stream)
+    const contentType = response.headers.get("content-type") || "application/octet-stream";
+
+    // Set response headers
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Content-Disposition", `attachment; filename*=UTF-8''${encodedFilename}`);
+
+    // Optional: Add caching control if needed
+    // res.setHeader("Cache-Control", "no-cache");
+
+    // Stream the response
+    if (response.body) {
+      response.body.pipe(res);
+    } else {
+      throw new Error("Response body is missing");
+    }
   } catch (err) {
-    console.error("Download error:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error("Download error [ID:", req.params.id, "]:", err.message);
+    res.status(500).json({ message: "Failed to download file" });
   }
 };
 
